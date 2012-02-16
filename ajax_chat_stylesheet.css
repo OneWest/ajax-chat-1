@@ -1,0 +1,21 @@
+#messageWindow {
+	width: 100%;
+	height: 54em;
+	display: block;
+
+	border: 1px solid #ccc;
+	background-color: aliceblue;
+	font-family: verdana;
+
+	resize: none;
+}
+
+#messageField {
+	width: 93%;
+}
+
+#sendMessageButton {
+	width: 5%;
+	margin: 0;
+	margin-left: 1.5em;
+}
