@@ -1,35 +1,70 @@
 <?php
 
-$action = $_POST['action'];
+if (!isset($_POST['action'])) exit;
 
-if ($action == 'retrieve') {
-	$messages = explode('\n', file_get_contents('ajax_chat_message_log.txt'));
-	unset($messages[count($messages) - 1]);
-
-	if (!empty($messages)) {
-		echo json_encode($messages);
+function ensure_message_log_exists() {	// untested
+	if (!file_exists($message_log)) {
+		$log = fopen($message_log, 'w');
+		if (!$log) exit;
+		if (!fwrite($log, '')) exit;
+		if (!fclose($log)) exit;
 	}
-} else if ($action == 'fetch') {
-	$messages_length = $_POST['length'];
+}
 
-	$log_messages = explode('\n', file_get_contents('ajax_chat_message_log.txt'));
+function retrieve_messages() {
+	$messages = explode($delimiter, file_get_contents($message_log));
+	$last_message_index = count($messages) - 1;
+	if ($last_message_index < 0) exit;
+
+	unset($messages[$last_message_index]);
+	if (!isset($messages)) exit;
+
+	echo json_encode($messages);
+}
+
+function fetch_messages() {
+	if (!isset($_POST['length'])) exit;
+	$current_messages_length = intval($_POST['length']);
+
+	$log_messages = explode($delimiter, file_get_contents($message_log));
 	$log_messages_length = count($log_messages) - 1;
+	if ($log_messages_length < 0) exit;
 
-	if ($messages_length < $log_messages_length) {
-		$message_difference = array();
+	if ($current_messages_length > $log_messages_length) exit;
 
-		for ($i = $messages_length; $i < $log_messages_length; $i++) {
-			$message_difference[] = $log_messages[$i];
-		}
+	$new_messages = array();
+	for ($i = $current_messages_length; $i < $log_messages_length; $i++)
+		$new_messages[] = $log_messages[$i];
+	if (count($new_messages) != $log_messages_length - $current_messages_length) exit;
 
-		echo json_encode($message_difference);
-	}
-} else if ($action == 'send') {
-	$message = $_POST['message'];
+	echo json_encode($message_difference);
+}
 
-	$log = fopen('ajax_chat_message_log.txt', 'a');
-	fwrite($log, $message.'\n');
-	fclose($log);
+function send_message() {
+	if (!isset($_POST['message'])) exit;
+	$message = strval($_POST['message']);
+
+	$log = fopen($message_log, 'a');
+	if (!$log) exit;
+	if (!fwrite($log, $message.$delimiter)) exit;
+	if (!fclose($log)) exit;
 
 	echo $message;
+}
+
+$message_log = 'ajax_chat_message_log.txt';
+$delimiter = '\n';
+
+ensure_message_log_exists();
+
+switch($_POST['action']) {
+	case 'retrieve':
+		retrieve_messages();
+		break;
+	case 'fetch':
+		fetch_messages();
+		break;
+	case 'send':
+		send_message();
+		break;
 }
