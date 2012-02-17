@@ -9,6 +9,10 @@ function init() {
 	messageField = document.getElementById('messageField');
 	button = document.getElementById('sendMessageButton');
 
+	prevMessagesLength = 0;
+	messagesLength = 0;
+	alert('init(): ' + messagesLength);
+
 	messageWindow.setAttribute('disabled', 'disabled');
 	button.setAttribute('disabled', 'disabled');
 
@@ -17,7 +21,7 @@ function init() {
 
 	retrieveMessages();
 
-	// setInterval("fetchNewMessages()", 1000);
+	setInterval("fetchNewMessages()", 1000);
 }
 
 function setAjaxRequest() {
@@ -46,9 +50,11 @@ function fetchNewMessages() {
 }
 
 function getMessagesRequest() {
-	if (request.readyState == 4 && request.status == 200) {
+	if (request.readyState == 4 && request.status == 200 && request.responseText != null) {
 		var messagesArray = JSON.parse(request.responseText);
-		messagesLength = --messagesArray.length;
+		prevMessagesLength = messagesLength;
+		messagesLength = parseInt(messagesLength) + parseInt(--messagesArray.length);
+		if (messagesLength != prevMessagesLength) alert('getMessagesRequest(): ' + messagesLength);
 
 		for (var i = 0; i < messagesLength; i++) {
 			messageWindow.value += messagesArray[i] + '\n';
@@ -69,8 +75,11 @@ function sendMessage() {
 
 function sendMessageRequest() {
 	if (request.readyState == 4 && request.status == 200) {
-		messagesLength++;
+		// prevMessagesLength = messagesLength;
+		// messagesLength++;
+		// if (messagesLength != prevMessagesLength) alert('sendMessageRequest(): ' + messagesLength);
 		messageWindow.value += request.responseText + '\n';
+		fetchNewMessages();
 	}
 }
 
