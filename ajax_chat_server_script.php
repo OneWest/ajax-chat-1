@@ -1,8 +1,19 @@
 <?php
 
-if (!isset($_POST['action'])) exit;
+if ((isset($_POST['message_log']) && isset($_POST['users_log'])) ||
+	!isset($_POST['action']) || !isset($_POST['delimiter']))
+	exit;
 
-function ensure_message_log_exists() {	// untested
+function ensure_users_log_exists($users_log) {	// untested
+	if (!file_exists($users_log)) {
+		$log = fopen($users_log, 'w');
+		if (!$log) exit;
+		if (!fwrite($log, '')) exit;
+		if (!fclose($log)) exit;
+	}
+}
+
+function ensure_message_log_exists($message_log) {	// untested
 	if (!file_exists($message_log)) {
 		$log = fopen($message_log, 'w');
 		if (!$log) exit;
@@ -11,7 +22,11 @@ function ensure_message_log_exists() {	// untested
 	}
 }
 
-function retrieve_messages() {
+function set_identity($users_log, $delimiter) {	// untested
+}
+
+function retrieve_messages($message_log, $delimiter) {
+	ensure_message_log_exists($message_log);
 	$messages = explode($delimiter, file_get_contents($message_log));
 	$last_message_index = count($messages) - 1;
 	if ($last_message_index < 0) exit;
@@ -22,10 +37,11 @@ function retrieve_messages() {
 	echo json_encode($messages);
 }
 
-function fetch_messages() {
+function fetch_messages($message_log, $delimiter) {
 	if (!isset($_POST['length'])) exit;
 	$current_messages_length = intval($_POST['length']);
 
+	ensure_message_log_exists($message_log);
 	$log_messages = explode($delimiter, file_get_contents($message_log));
 	$log_messages_length = count($log_messages) - 1;
 	if ($log_messages_length < 0) exit;
@@ -40,10 +56,11 @@ function fetch_messages() {
 	echo json_encode($message_difference);
 }
 
-function send_message() {
+function send_message($message_log, $delimiter) {
 	if (!isset($_POST['message'])) exit;
 	$message = strval($_POST['message']);
 
+	ensure_message_log_exists($message_log);
 	$log = fopen($message_log, 'a');
 	if (!$log) exit;
 	if (!fwrite($log, $message.$delimiter)) exit;
@@ -52,19 +69,17 @@ function send_message() {
 	echo $message;
 }
 
-$message_log = 'ajax_chat_message_log.txt';
-$delimiter = '\n';
-
-ensure_message_log_exists();
-
 switch($_POST['action']) {
+	case 'identify':
+		set_identity($_POST['users_log'], $_POST['delimiter']);
+		break;
 	case 'retrieve':
-		retrieve_messages();
+		retrieve_messages($_POST['message_log'], $_POST['delimiter']);
 		break;
 	case 'fetch':
-		fetch_messages();
+		fetch_messages($_POST['message_log'], $_POST['delimiter']);
 		break;
 	case 'send':
-		send_message();
+		send_message($_POST['message_log'], $_POST['delimiter']);
 		break;
 }
