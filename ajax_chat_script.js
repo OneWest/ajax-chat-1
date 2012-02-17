@@ -15,6 +15,7 @@ function init() {
 	button.setAttribute('disabled', 'disabled');
 
 	messageField.addEventListener('keyup', changeButtonState);
+	messageField.addEventListener('keyup', checkIfSendMessage);
 	button.addEventListener('click', sendMessage);
 
 	retrieveMessages();
@@ -32,6 +33,12 @@ function changeButtonState() {
 		button.removeAttribute('disabled');
 	} else if (!messageField.value && !button.hasAttribute('disabled')) {
 		button.setAttribute('disabled', 'disabled');
+	}
+}
+
+function checkIfSendMessage(event) {
+	if (event.keyCode == 13) {
+		sendMessage();
 	}
 }
 
