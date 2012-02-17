@@ -9,9 +9,7 @@ function init() {
 	messageField = document.getElementById('messageField');
 	button = document.getElementById('sendMessageButton');
 
-	prevMessagesLength = 0;
 	messagesLength = 0;
-	alert('init(): ' + messagesLength);
 
 	messageWindow.setAttribute('disabled', 'disabled');
 	button.setAttribute('disabled', 'disabled');
@@ -50,13 +48,11 @@ function fetchNewMessages() {
 }
 
 function getMessagesRequest() {
-	if (request.readyState == 4 && request.status == 200 && request.responseText != null) {
+	if (request.readyState == 4 && request.status == 200) {
 		var messagesArray = JSON.parse(request.responseText);
-		prevMessagesLength = messagesLength;
-		messagesLength = parseInt(messagesLength) + parseInt(--messagesArray.length);
-		if (messagesLength != prevMessagesLength) alert('getMessagesRequest(): ' + messagesLength);
+		messagesLength += messagesArray.length;
 
-		for (var i = 0; i < messagesLength; i++) {
+		for (var i = 0; i < messagesArray.length; i++) {
 			messageWindow.value += messagesArray[i] + '\n';
 		}
 	}
@@ -75,10 +71,6 @@ function sendMessage() {
 
 function sendMessageRequest() {
 	if (request.readyState == 4 && request.status == 200) {
-		// prevMessagesLength = messagesLength;
-		// messagesLength++;
-		// if (messagesLength != prevMessagesLength) alert('sendMessageRequest(): ' + messagesLength);
-		messageWindow.value += request.responseText + '\n';
 		fetchNewMessages();
 	}
 }
