@@ -1,6 +1,6 @@
 SERVER_SCRIPT = 'ajax_chat_server_script.php';
-MESSAGE_LOG = 'ajax_chat_message_log.php';
-USERS_LOG = 'ajax_chat_users_log.php';
+USERS_LOG = 'ajax_chat_users_log.txt';
+MESSAGE_LOG = 'ajax_chat_message_log.txt';
 DELIMITER = '\n';
 
 FETCH_INTERVAL_MS = 1000;
@@ -27,20 +27,23 @@ function init() {
 	messageField.addEventListener('keyup', checkIfSendMessage);
 	button.addEventListener('click', sendMessage);
 
-	messageLogQuery = 'message_log=' + encodeURIComponent(MESSAGE_LOG);
-	usersLogQuery = 'users_log=' + encodeURIComponent(USERS_LOG);
+	usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
+	messageLogQuery = '&message_log=' + encodeURIComponent(MESSAGE_LOG);
 	delimiterQuery = '&delimiter=' + encodeURIComponent(DELIMITER);
+
+	actionQuery = 'action=';
+	usernameQuery = '&username=';
+	passwordQuery = '&password=';
+	lengthQuery = '&length=';
+	messageQuery = '&message=';
 
 	messagesLength = 0;
 
-	uniqueIdentity = false;
-	while (!uniqueIdentity) {
-		askForIdentity();
-	}
-
+	username = prompt('Enter your username:');
+	// loginUser();
 	retrieveMessages();
 
-	setInterval("fetchNewMessages()", FETCH_INTERVAL_MS);
+	setInterval('fetchNewMessages()', FETCH_INTERVAL_MS);
 }
 
 function setAjaxRequest() {
@@ -62,43 +65,92 @@ function checkIfSendMessage(event) {
 	}
 }
 
-function askForIdentity() {
-	username = prompt('Enter your username: ');
+function loginUser() {
+	successfulLogin = false;
+
+	username = prompt('Enter your username:');
+
+	var query = '';
+	query += actionQuery + 'login';
+	query += usersLogQuery;
+	query += usernameQuery + encodeURIComponent(username);
+	query += delimiterQuery;
 
 	setAjaxRequest();
-	request.onreadystatechange = setIdentityRequest;
-	request.send(usersLogQuery + '&action=identify&username=' + encodeURIComponent(username) + delimiterQuery);
+	request.onreadystatechange = loginUserRequest;
+	request.send(query);
+
+	while (!successfulLogin);
+}
+
+function registerUser() {
+	var query = '';
+	query += actionQuery + 'register';
+	query += usersLogQuery;
+	query += usernameQuery + encodeURIComponent(username);
+	query += passwordQuery + encodeURIComponent(password);
+	query += delimiterQuery;
+
+	setAjaxRequest();
+	request.send(query);
 }
 
 function retrieveMessages() {
+	var query = '';
+	query += actionQuery + 'retrieve';
+	query += messageLogQuery;
+	query += delimiterQuery;
+
 	setAjaxRequest();
 	request.onreadystatechange = getMessagesRequest;
-	request.send(messageLogQuery + '&action=retrieve' + delimiterQuery);
+	request.send(query);
 }
 
 function fetchNewMessages() {
+	var query = '';
+	query += actionQuery + 'fetch';
+	query += messageLogQuery;
+	query += lengthQuery + encodeURIComponent(messagesLength);
+	query += delimiterQuery;
+
 	setAjaxRequest();
 	request.onreadystatechange = getMessagesRequest;
-	request.send(messageLogQuery + '&action=fetch&length=' + encodeURIComponent(messagesLength) + delimiterQuery);
+	request.send(query);
 }
 
 function sendMessage() {
 	var message = messageField.value;
+
+	var query = '';
+	query += actionQuery + 'send';
+	query += messageLogQuery;
+	query += usernameQuery + encodeURIComponent(username);
+	query += messageQuery + encodeURIComponent(message);
+	query += delimiterQuery;
 
 	messageField.value = '';
 	changeButtonState();
 
 	setAjaxRequest();
 	request.onreadystatechange = sendMessageRequest;
-	request.send(messageLogQuery + '&action=send&message=' + encodeURIComponent(message) + delimiterQuery);
+	request.send(query);
 }
 
-function setIdentityRequest() {
+function loginUserRequest() {
 	if (request.readyState == RESPONSE_READY && request.status == OK) {
-		if (request.responseText == 'false') {
-			alert('That username has already been taken.');
+		if (request.responseText != '') {
+			password = prompt('Username found.\n\nEnter your password:');
+			if (password == request.responseText) {
+				successfulLogin = true;
+				alert('Welcome back.');
+			} else {
+				alert('Wrong password.');
+			}
+		} else {
+			password = prompt('Username not found. Creating new account.\n\nEnter your password:');
+			registerUser();
+			alert('Enjoy.');
 		}
-		uniqueIdentity = true;
 	}
 }
 
@@ -106,7 +158,6 @@ function getMessagesRequest() {
 	if (request.readyState == RESPONSE_READY && request.status == OK) {
 		var messagesArray = JSON.parse(request.responseText);
 		messagesLength += messagesArray.length;
-
 		for (var i = 0; i < messagesArray.length; i++) {
 			messageWindow.value += messagesArray[i] + DELIMITER;
 		}
