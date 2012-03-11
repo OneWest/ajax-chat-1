@@ -1,0 +1,37 @@
+AJAX CHAT
+
+About
+-----
+
+A simple web chat application. Users open a webpage in which they enter their m
+essages. Their messages are then displayed in real-time on the webpage for othe
+r users to see.
+
+Technical Information
+---------------------
+
+This application is programmed using HTML, CSS, JavaScript, AJAX and PHP. Messa
+ges are saved in ajax_chat_message_log.txt in order to retrieve and display old
+ conversations from previous sessions in newer ones at startup.
+
+Installation
+------------
+
+Move all files to a web server, preferably in a single directory.
+
+How to Use
+----------
+
+Point your browser to ajax_chat.html. Enter the username you would like to use 
+in the current session. Start writing messages!
+
+Notes
+-----
+
+To clear the message log, simply empty ajax_chat_message_log.txt
+
+Background and History
+----------------------
+
+This project started off as a way to practice JavaScript and the concept of AJA
+X. I have no serious intentions for this aside from mere practice.
