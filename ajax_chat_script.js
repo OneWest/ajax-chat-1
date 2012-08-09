@@ -16,9 +16,9 @@ function init() {
 		request = new ActiveXObject('Microsoft.XMLHTTP');
 	}
 
-	messageWindow = document.getElementById('messageWindow');
-	messageField = document.getElementById('messageField');
-	button = document.getElementById('sendMessageButton');
+	messageWindow = document.getElementById('message-window');
+	messageField = document.getElementById('message-field');
+	button = document.getElementById('send-message-button');
 
 	messageWindow.setAttribute('disabled', 'disabled');
 	button.setAttribute('disabled', 'disabled');
