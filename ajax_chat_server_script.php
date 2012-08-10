@@ -50,10 +50,7 @@ function retrieve_messages() {
 	// ensure_log_exists($message_log);
 	$messages = explode($delimiter, file_get_contents($message_log));
 	$empty_message_index = count($messages) - 1;
-	if ($empty_message_index < 0) exit;
-
 	unset($messages[$empty_message_index]);
-
 	if (!empty($messages)) {
 		echo json_encode($messages);
 	}
