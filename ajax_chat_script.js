@@ -46,9 +46,13 @@ function init() {
 	setInterval('fetchNewMessages()', FETCH_INTERVAL_MS);
 }
 
-function setAjaxRequest() {
+function sendRequest(callback, query) {
+	if (callback != undefined) {
+		request.onreadystatechange = callback;
+	}
 	request.open('post', SERVER_SCRIPT, true);
 	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	request.send(query);
 }
 
 function changeButtonState() {
@@ -76,9 +80,7 @@ function loginUser() {
 	query += usernameQuery + encodeURIComponent(username);
 	query += delimiterQuery;
 
-	setAjaxRequest();
-	request.onreadystatechange = loginUserRequest;
-	request.send(query);
+	sendRequest(loginUserRequest, query);
 
 	while (!successfulLogin);
 }
@@ -91,8 +93,7 @@ function registerUser() {
 	query += passwordQuery + encodeURIComponent(password);
 	query += delimiterQuery;
 
-	setAjaxRequest();
-	request.send(query);
+	sendRequest(undefined, query);
 }
 
 function retrieveMessages() {
@@ -101,9 +102,7 @@ function retrieveMessages() {
 	query += messageLogQuery;
 	query += delimiterQuery;
 
-	setAjaxRequest();
-	request.onreadystatechange = getMessagesRequest;
-	request.send(query);
+	sendRequest(getMessagesRequest, query);
 }
 
 function fetchNewMessages() {
@@ -113,9 +112,7 @@ function fetchNewMessages() {
 	query += lengthQuery + encodeURIComponent(messagesLength);
 	query += delimiterQuery;
 
-	setAjaxRequest();
-	request.onreadystatechange = getMessagesRequest;
-	request.send(query);
+	sendRequest(getMessagesRequest, query);
 }
 
 function sendMessage() {
@@ -131,9 +128,7 @@ function sendMessage() {
 	messageField.value = '';
 	changeButtonState();
 
-	setAjaxRequest();
-	request.onreadystatechange = sendMessageRequest;
-	request.send(query);
+	sendRequest(sendMessageRequest, query);
 }
 
 function loginUserRequest() {
