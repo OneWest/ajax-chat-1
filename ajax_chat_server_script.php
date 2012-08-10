@@ -1,11 +1,9 @@
 <?php
 
-function ensure_log_exists($log_file) {	// untested
+function ensure_log_exists($log_file) {
 	if (!file_exists($log_file)) {
 		$log = fopen($log_file, 'w');
-		if (!$log) exit;
-		if (!fwrite($log, '')) exit;
-		if (!fclose($log)) exit;
+		fclose($log);
 	}
 }
 
