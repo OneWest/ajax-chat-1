@@ -51,6 +51,7 @@ function retrieve_messages() {
 	$messages = explode($delimiter, file_get_contents($message_log));
 	$empty_message_index = count($messages) - 1;
 	unset($messages[$empty_message_index]);
+
 	if (!empty($messages)) {
 		echo json_encode($messages);
 	}
@@ -68,6 +69,7 @@ function fetch_messages() {
 	for ($i = $length; $i < $log_length; $i++) {
 		$new_messages[] = $log_messages[$i];
 	}
+
 	if (!empty($new_messages)) {
 		echo json_encode($new_messages);
 	}
@@ -81,9 +83,8 @@ function send_message() {
 
 	// ensure_log_exists($message_log);
 	$log = fopen($message_log, 'a');
-	if (!$log) exit;
-	if (!fwrite($log, '['.$username.'] '.$message.$delimiter)) exit;
-	if (!fclose($log)) exit;
+	fwrite($log, '['.$username.'] '.$message.$delimiter);
+	fclose($log);
 }
 
 switch ($_POST['action']) {
