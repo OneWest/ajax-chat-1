@@ -64,15 +64,10 @@ function fetch_messages() {
 	// ensure_log_exists($message_log);
 	$log_messages = explode($delimiter, file_get_contents($message_log));
 	$log_length = count($log_messages) - 1;
-	if ($log_length < 0) exit;
-
-	if ($length > $log_length) exit;
-
 	$new_messages = array();
 	for ($i = $length; $i < $log_length; $i++) {
 		$new_messages[] = $log_messages[$i];
 	}
-
 	if (!empty($new_messages)) {
 		echo json_encode($new_messages);
 	}
