@@ -45,7 +45,7 @@ function retrieve_messages() {
 	$message_log = $_POST['message_log'];
 	$delimiter = $_POST['delimiter'];
 
-	// ensure_log_exists($message_log);
+	ensure_log_exists($message_log);
 	$messages = explode($delimiter, file_get_contents($message_log));
 	$empty_message_index = count($messages) - 1;
 	unset($messages[$empty_message_index]);
@@ -60,7 +60,7 @@ function fetch_messages() {
 	$length = intval($_POST['length']);
 	$delimiter = $_POST['delimiter'];
 
-	// ensure_log_exists($message_log);
+	ensure_log_exists($message_log);
 	$log_messages = explode($delimiter, file_get_contents($message_log));
 	$log_length = count($log_messages) - 1;
 	$new_messages = array();
@@ -79,7 +79,7 @@ function send_message() {
 	$message = $_POST['message'];
 	$delimiter = $_POST['delimiter'];
 
-	// ensure_log_exists($message_log);
+	ensure_log_exists($message_log);
 	$log = fopen($message_log, 'a');
 	fwrite($log, '['.$username.'] '.$message.$delimiter);
 	fclose($log);
