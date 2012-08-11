@@ -168,10 +168,10 @@ function loginUserRequest() {
 
 function getMessagesRequest() {
 	if (isRequestResponseReady()) {
-		var messagesArray = JSON.parse(request.responseText);
-		messagesLength += messagesArray.length;
-		for (var i = 0; i < messagesArray.length; i++) {
-			messageWindow.value += messagesArray[i] + DELIMITER;
+		var messages = JSON.parse(request.responseText);
+		messagesLength += messages.length;
+		for (var i = 0; i < messages.length; i++) {
+			messageWindow.value += messages[i] + DELIMITER;
 		}
 	}
 }
