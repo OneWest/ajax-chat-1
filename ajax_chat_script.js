@@ -5,45 +5,58 @@ DELIMITER = '\n';
 
 FETCH_INTERVAL_MS = 1000;
 ENTER_KEY = 13;
-
 RESPONSE_READY = 4;
 OK = 200;
 
 function init() {
-	if (window.XMLHttpRequest) {
-		request = new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
-		request = new ActiveXObject('Microsoft.XMLHTTP');
-	}
-
-	messageWindow = document.getElementById('message-window');
-	messageField = document.getElementById('message-field');
-	button = document.getElementById('send-message-button');
-
-	messageWindow.setAttribute('disabled', 'disabled');
-	button.setAttribute('disabled', 'disabled');
-
-	messageField.addEventListener('keyup', changeButtonState);
-	messageField.addEventListener('keyup', checkIfSendMessage);
-	button.addEventListener('click', sendMessage);
-
-	usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
-	messageLogQuery = '&message_log=' + encodeURIComponent(MESSAGE_LOG);
-	delimiterQuery = '&delimiter=' + encodeURIComponent(DELIMITER);
-
-	actionQuery = 'action=';
-	usernameQuery = '&username=';
-	passwordQuery = '&password=';
-	lengthQuery = '&length=';
-	messageQuery = '&message=';
+	setRequestObject();
+	setElementObjects();
+	setElementObjectsAttributes();
+	setElementObjectsEventListeners();
+	setQueries();
 
 	messagesLength = 0;
 
 	username = prompt('Enter your username:');
 	// loginUser();
 	retrieveMessages();
-
 	setInterval('fetchNewMessages()', FETCH_INTERVAL_MS);
+}
+
+function setRequestObject() {
+	if (window.XMLHttpRequest) {
+		request = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+		request = new ActiveXObject('Microsoft.XMLHTTP');
+	}
+}
+
+function setElementObjects() {
+	messageWindow = document.getElementById('message-window');
+	messageField = document.getElementById('message-field');
+	button = document.getElementById('send-message-button');
+}
+
+function setElementObjectsAttributes() {
+	messageWindow.setAttribute('disabled', 'disabled');
+	button.setAttribute('disabled', 'disabled');
+}
+
+function setElementObjectsEventListeners() {
+	messageField.addEventListener('keyup', changeButtonState);
+	messageField.addEventListener('keyup', checkIfSendMessage);
+	button.addEventListener('click', sendMessage);
+}
+
+function setQueries() {
+	// usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
+	messageLogQuery = '&message_log=' + encodeURIComponent(MESSAGE_LOG);
+	delimiterQuery = '&delimiter=' + encodeURIComponent(DELIMITER);
+	actionQuery = 'action=';
+	usernameQuery = '&username=';
+	passwordQuery = '&password=';
+	lengthQuery = '&length=';
+	messageQuery = '&message=';
 }
 
 function sendRequest(callback, query) {
