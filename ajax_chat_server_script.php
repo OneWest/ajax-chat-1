@@ -15,13 +15,10 @@ function login_user() {
 	// ensure_log_exists($users_log);
 	$users = explode($delimiter, file_get_contents($users_log));
 	$empty_user_index = count($users) - 1;
-	if ($empty_user_index < 0) exit;
-
 	unset($users[$empty_user_index]);
 
 	if (in_array($username, $users) && array_search($username, $users) % 2 == 0) {
 		$user_password_index = array_search($username, $users) + 1;
-		if ($user_password_index < 1 || $user_password_index >= count($users)) exit;
 		echo $users[$user_password_index];
 	} else {
 		echo '';
@@ -36,9 +33,8 @@ function register_user() {
 
 	// ensure_log_exists($users_log);
 	$log = fopen($users_log, 'a');
-	if (!$log) exit;
-	if (!fwrite($log, $username.$delimiter.$password.$delimiter)) exit;
-	if (!fclose($log)) exit;
+	fwrite($log, $username.$delimiter.$password.$delimiter);
+	fclose($log);
 }
 
 function retrieve_messages() {
@@ -63,6 +59,7 @@ function fetch_messages() {
 	ensure_log_exists($message_log);
 	$log_messages = explode($delimiter, file_get_contents($message_log));
 	$log_length = count($log_messages) - 1;
+
 	$new_messages = array();
 	for ($i = $length; $i < $log_length; $i++) {
 		$new_messages[] = $log_messages[$i];
