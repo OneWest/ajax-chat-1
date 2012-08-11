@@ -31,6 +31,19 @@ function setRequestObject() {
 	}
 }
 
+function sendRequest(callback, query) {
+	if (callback != undefined) {
+		request.onreadystatechange = callback;
+	}
+	request.open('post', SERVER_SCRIPT, true);
+	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	request.send(query);
+}
+
+function isRequestResponseReady() {
+	return (request.readyState == RESPONSE_READY && request.status == OK);
+}
+
 function setElementObjects() {
 	messageWindow = document.getElementById('message-window');
 	messageField = document.getElementById('message-field');
@@ -57,15 +70,6 @@ function setQueries() {
 	passwordQuery = '&password=';
 	lengthQuery = '&length=';
 	messageQuery = '&message=';
-}
-
-function sendRequest(callback, query) {
-	if (callback != undefined) {
-		request.onreadystatechange = callback;
-	}
-	request.open('post', SERVER_SCRIPT, true);
-	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	request.send(query);
 }
 
 function changeButtonState() {
@@ -163,7 +167,7 @@ function loginUserRequest() {
 }
 
 function getMessagesRequest() {
-	if (request.readyState == RESPONSE_READY && request.status == OK) {
+	if (isRequestResponseReady()) {
 		var messagesArray = JSON.parse(request.responseText);
 		messagesLength += messagesArray.length;
 		for (var i = 0; i < messagesArray.length; i++) {
@@ -173,7 +177,7 @@ function getMessagesRequest() {
 }
 
 function sendMessageRequest() {
-	if (request.readyState == RESPONSE_READY && request.status == OK) {
+	if (isRequestResponseReady()) {
 		fetchNewMessages();
 	}
 }
