@@ -62,7 +62,7 @@ function setElementObjectsEventListeners() {
 }
 
 function setQueries() {
-	// usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
+	usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
 	messageLogQuery = '&message_log=' + encodeURIComponent(MESSAGE_LOG);
 	delimiterQuery = '&delimiter=' + encodeURIComponent(DELIMITER);
 	actionQuery = 'action=';
