@@ -12,7 +12,7 @@ function login_user() {
 	$username = $_POST['username'];
 	$delimiter = $_POST['delimiter'];
 
-	// ensure_log_exists($users_log);
+	ensure_log_exists($users_log);
 	$users = explode($delimiter, file_get_contents($users_log));
 	$empty_user_index = count($users) - 1;
 	unset($users[$empty_user_index]);
@@ -31,7 +31,7 @@ function register_user() {
 	$password = $_POST['password'];
 	$delimiter = $_POST['delimiter'];
 
-	// ensure_log_exists($users_log);
+	ensure_log_exists($users_log);
 	$log = fopen($users_log, 'a');
 	fwrite($log, $username.$delimiter.$password.$delimiter);
 	fclose($log);
