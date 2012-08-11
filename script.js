@@ -1,6 +1,6 @@
-SERVER_SCRIPT = 'ajax_chat_server_script.php';
-USERS_LOG = 'ajax_chat_users_log.txt';
-MESSAGE_LOG = 'ajax_chat_message_log.txt';
+SERVER_SCRIPT = 'script.php';
+USERS_LOG = 'users_log.txt';
+MESSAGE_LOG = 'message_log.txt';
 DELIMITER = '\n';
 
 FETCH_INTERVAL_MS = 1000;
