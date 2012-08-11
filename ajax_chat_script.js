@@ -144,7 +144,7 @@ function sendMessage() {
 }
 
 function loginUserRequest() {
-	if (request.readyState == RESPONSE_READY && request.status == OK) {
+	if (isRequestResponseReady()) {
 		if (request.responseText != '') {
 			password = prompt('Username found.\n\nEnter your password:');
 			if (password == request.responseText) {
