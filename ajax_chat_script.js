@@ -15,6 +15,7 @@ function init() {
 	setElementObjectsEventListeners();
 	setQueries();
 
+	successfulLogin = false;
 	messagesLength = 0;
 
 	username = prompt('Enter your username:');
@@ -87,10 +88,6 @@ function checkIfSendMessage(event) {
 }
 
 function loginUser() {
-	successfulLogin = false;
-
-	username = prompt('Enter your username:');
-
 	var query = '';
 	query += actionQuery + 'login';
 	query += usersLogQuery;
@@ -98,8 +95,6 @@ function loginUser() {
 	query += delimiterQuery;
 
 	sendRequest(loginUserRequest, query);
-
-	while (!successfulLogin);
 }
 
 function registerUser() {
