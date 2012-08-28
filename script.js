@@ -9,11 +9,31 @@ RESPONSE_READY = 4;
 OK = 200;
 
 function init() {
-	setRequestObject();
-	setElementObjects();
-	setElementObjectsAttributes();
-	setElementObjectsEventListeners();
-	setQueries();
+	if (window.XMLHttpRequest) {
+		request = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+		request = new ActiveXObject('Microsoft.XMLHTTP');
+	}
+
+	messageWindow = document.getElementById('message-window');
+	messageField = document.getElementById('message-field');
+	button = document.getElementById('send-message-button');
+
+	messageWindow.setAttribute('disabled', 'disabled');
+	button.setAttribute('disabled', 'disabled');
+
+	messageField.addEventListener('keyup', changeButtonState);
+	messageField.addEventListener('keyup', checkIfSendMessage);
+	button.addEventListener('click', sendMessage);
+
+	usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
+	messageLogQuery = '&message_log=' + encodeURIComponent(MESSAGE_LOG);
+	delimiterQuery = '&delimiter=' + encodeURIComponent(DELIMITER);
+	actionQuery = 'action=';
+	usernameQuery = '&username=';
+	passwordQuery = '&password=';
+	lengthQuery = '&length=';
+	messageQuery = '&message=';
 
 	successfulLogin = false;
 	messagesLength = 0;
@@ -22,14 +42,6 @@ function init() {
 	// loginUser();
 	retrieveMessages();
 	setInterval('fetchNewMessages()', FETCH_INTERVAL_MS);
-}
-
-function setRequestObject() {
-	if (window.XMLHttpRequest) {
-		request = new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
-		request = new ActiveXObject('Microsoft.XMLHTTP');
-	}
 }
 
 function sendRequest(callback, query) {
@@ -43,34 +55,6 @@ function sendRequest(callback, query) {
 
 function isRequestResponseReady() {
 	return (request.readyState == RESPONSE_READY && request.status == OK);
-}
-
-function setElementObjects() {
-	messageWindow = document.getElementById('message-window');
-	messageField = document.getElementById('message-field');
-	button = document.getElementById('send-message-button');
-}
-
-function setElementObjectsAttributes() {
-	messageWindow.setAttribute('disabled', 'disabled');
-	button.setAttribute('disabled', 'disabled');
-}
-
-function setElementObjectsEventListeners() {
-	messageField.addEventListener('keyup', changeButtonState);
-	messageField.addEventListener('keyup', checkIfSendMessage);
-	button.addEventListener('click', sendMessage);
-}
-
-function setQueries() {
-	usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
-	messageLogQuery = '&message_log=' + encodeURIComponent(MESSAGE_LOG);
-	delimiterQuery = '&delimiter=' + encodeURIComponent(DELIMITER);
-	actionQuery = 'action=';
-	usernameQuery = '&username=';
-	passwordQuery = '&password=';
-	lengthQuery = '&length=';
-	messageQuery = '&message=';
 }
 
 function changeButtonState() {
