@@ -8,7 +8,7 @@ ENTER_KEY = 13;
 RESPONSE_READY = 4;
 OK = 200;
 
-function init() {
+var init = function() {
 	if (window.XMLHttpRequest) {
 		request = new XMLHttpRequest();
 	} else if (window.ActiveXObject) {
@@ -42,36 +42,36 @@ function init() {
 	// loginUser();
 	retrieveMessages();
 	setInterval('fetchNewMessages()', FETCH_INTERVAL_MS);
-}
+};
 
-function sendRequest(callback, query) {
+var sendRequest = function(callback, query) {
 	if (callback != undefined) {
 		request.onreadystatechange = callback;
 	}
 	request.open('post', SERVER_SCRIPT, true);
 	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	request.send(query);
-}
+};
 
-function isRequestResponseReady() {
+var isRequestResponseReady = function() {
 	return (request.readyState == RESPONSE_READY && request.status == OK);
-}
+};
 
-function changeButtonState() {
+var changeButtonState = function() {
 	if (messageField.value && button.hasAttribute('disabled')) {
 		button.removeAttribute('disabled');
 	} else if (!messageField.value && !button.hasAttribute('disabled')) {
 		button.setAttribute('disabled', 'disabled');
 	}
-}
+};
 
-function checkIfSendMessage(event) {
+var checkIfSendMessage = function(event) {
 	if (event.keyCode == ENTER_KEY) {
 		sendMessage();
 	}
-}
+};
 
-function loginUser() {
+var loginUser = function() {
 	var query = '';
 	query += actionQuery + 'login';
 	query += usersLogQuery;
@@ -79,9 +79,9 @@ function loginUser() {
 	query += delimiterQuery;
 
 	sendRequest(loginUserRequest, query);
-}
+};
 
-function registerUser() {
+var registerUser = function() {
 	var query = '';
 	query += actionQuery + 'register';
 	query += usersLogQuery;
@@ -90,18 +90,18 @@ function registerUser() {
 	query += delimiterQuery;
 
 	sendRequest(undefined, query);
-}
+};
 
-function retrieveMessages() {
+var retrieveMessages = function() {
 	var query = '';
 	query += actionQuery + 'retrieve';
 	query += messageLogQuery;
 	query += delimiterQuery;
 
 	sendRequest(getMessagesRequest, query);
-}
+};
 
-function fetchNewMessages() {
+var fetchNewMessages = function() {
 	var query = '';
 	query += actionQuery + 'fetch';
 	query += messageLogQuery;
@@ -109,9 +109,9 @@ function fetchNewMessages() {
 	query += delimiterQuery;
 
 	sendRequest(getMessagesRequest, query);
-}
+};
 
-function sendMessage() {
+var sendMessage = function() {
 	var message = messageField.value;
 
 	var query = '';
@@ -125,9 +125,9 @@ function sendMessage() {
 	changeButtonState();
 
 	sendRequest(sendMessageRequest, query);
-}
+};
 
-function loginUserRequest() {
+var loginUserRequest = function() {
 	if (isRequestResponseReady()) {
 		if (request.responseText != '') {
 			password = prompt('Username found.\n\nEnter your password:');
@@ -143,9 +143,9 @@ function loginUserRequest() {
 			alert('Enjoy.');
 		}
 	}
-}
+};
 
-function getMessagesRequest() {
+var getMessagesRequest = function() {
 	if (isRequestResponseReady()) {
 		var messages = JSON.parse(request.responseText);
 		messagesLength += messages.length;
@@ -153,12 +153,12 @@ function getMessagesRequest() {
 			messageWindow.value += messages[i] + DELIMITER;
 		}
 	}
-}
+};
 
-function sendMessageRequest() {
+var sendMessageRequest = function() {
 	if (isRequestResponseReady()) {
 		fetchNewMessages();
 	}
-}
+};
 
 document.addEventListener('DOMContentLoaded', init);
