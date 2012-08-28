@@ -149,7 +149,7 @@ var getMessagesRequest = function() {
 	if (isRequestResponseReady()) {
 		var messages = JSON.parse(request.responseText);
 		messagesLength += messages.length;
-		for (var i = 0; i < messages.length; i++) {
+		for (var i in messages) {
 			messageWindow.value += messages[i] + DELIMITER;
 		}
 	}
