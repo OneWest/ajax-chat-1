@@ -1,164 +1,165 @@
-SERVER_SCRIPT = 'script.php';
-USERS_LOG = 'users_log.txt';
-MESSAGE_LOG = 'message_log.txt';
-DELIMITER = '\n';
+var Chat = function() {
+	this.serverScript = 'script.php';
+	this.usersLog = 'users_log.txt';
+	this.messageLog = 'message_log.txt';
+	this.delimiter = '\n';
 
-FETCH_INTERVAL_MS = 1000;
-ENTER_KEY = 13;
-RESPONSE_READY = 4;
-OK = 200;
+	this.fetchIntervalMs = 1000;
+	this.enterKey = 13;
+	this.responseReady = 4;
+	this.ok = 200;
 
-var init = function() {
-	if (window.XMLHttpRequest) {
-		request = new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
-		request = new ActiveXObject('Microsoft.XMLHTTP');
-	}
+	this.request = (function() {
+		if (window.XMLHttpRequest) {
+			return new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			return new ActiveXObject('Microsoft.XMLHTTP');
+		}
+	})();
 
-	messageWindow = document.getElementById('message-window');
-	messageField = document.getElementById('message-field');
-	button = document.getElementById('send-message-button');
+	this.messageWindow = document.getElementById('message-window');
+	this.messageField = document.getElementById('message-field');
+	this.button = document.getElementById('send-message-button');
 
-	messageWindow.setAttribute('disabled', 'disabled');
-	button.setAttribute('disabled', 'disabled');
+	this.messageWindow.setAttribute('disabled', 'disabled');
+	this.button.setAttribute('disabled', 'disabled');
 
-	messageField.addEventListener('keyup', changeButtonState);
-	messageField.addEventListener('keyup', checkIfSendMessage);
-	button.addEventListener('click', sendMessage);
+	this.messageField.addEventListener('keyup', this.changeButtonState);
+	this.messageField.addEventListener('keyup', this.checkIfSendMessage);
+	this.button.addEventListener('click', this.sendMessage);
 
-	usersLogQuery = '&users_log=' + encodeURIComponent(USERS_LOG);
-	messageLogQuery = '&message_log=' + encodeURIComponent(MESSAGE_LOG);
-	delimiterQuery = '&delimiter=' + encodeURIComponent(DELIMITER);
-	actionQuery = 'action=';
-	usernameQuery = '&username=';
-	passwordQuery = '&password=';
-	lengthQuery = '&length=';
-	messageQuery = '&message=';
-
-	successfulLogin = false;
-	messagesLength = 0;
-
-	username = prompt('Enter your username:');
-	// loginUser();
-	retrieveMessages();
-	setInterval('fetchNewMessages()', FETCH_INTERVAL_MS);
+	this.usersLogQuery = '&users_log=' + encodeURIComponent(this.usersLog);
+	this.messageLogQuery = '&message_log=' + encodeURIComponent(this.messageLog);
+	this.delimiterQuery = '&delimiter=' + encodeURIComponent(this.delimiter);
+	this.actionQuery = 'action=';
+	this.usernameQuery = '&username=';
+	this.passwordQuery = '&password=';
+	this.lengthQuery = '&length=';
+	this.messageQuery = '&message=';
 };
 
-var sendRequest = function(callback, query) {
+Chat.prototype.sendRequest = function(callback, query) {
 	if (callback != undefined) {
-		request.onreadystatechange = callback;
+		this.request.onreadystatechange = callback;
 	}
-	request.open('post', SERVER_SCRIPT, true);
-	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	request.send(query);
+	this.request.open('post', this.serverScript, true);
+	this.request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	this.request.send(query);
 };
 
-var isRequestResponseReady = function() {
-	return (request.readyState == RESPONSE_READY && request.status == OK);
+Chat.prototype.isRequestResponseReady = function() {
+	return (this.request.readyState == this.responseReady && this.request.status == this.ok);
 };
 
-var changeButtonState = function() {
-	if (messageField.value && button.hasAttribute('disabled')) {
-		button.removeAttribute('disabled');
-	} else if (!messageField.value && !button.hasAttribute('disabled')) {
-		button.setAttribute('disabled', 'disabled');
-	}
-};
-
-var checkIfSendMessage = function(event) {
-	if (event.keyCode == ENTER_KEY) {
-		sendMessage();
+Chat.prototype.changeButtonState = function() {
+	if (this.messageField.value && this.button.hasAttribute('disabled')) {
+		this.button.removeAttribute('disabled');
+	} else if (!this.messageField.value && !this.button.hasAttribute('disabled')) {
+		this.button.setAttribute('disabled', 'disabled');
 	}
 };
 
-var loginUser = function() {
-	var query = '';
-	query += actionQuery + 'login';
-	query += usersLogQuery;
-	query += usernameQuery + encodeURIComponent(username);
-	query += delimiterQuery;
-
-	sendRequest(loginUserRequest, query);
+Chat.prototype.checkIfSendMessage = function(event) {
+	if (event.keyCode == this.enterKey) {
+		this.sendMessage();
+	}
 };
 
-var registerUser = function() {
+Chat.prototype.loginUser = function() {
 	var query = '';
-	query += actionQuery + 'register';
-	query += usersLogQuery;
-	query += usernameQuery + encodeURIComponent(username);
-	query += passwordQuery + encodeURIComponent(password);
-	query += delimiterQuery;
+	query += this.actionQuery + 'login';
+	query += this.usersLogQuery;
+	query += this.usernameQuery + encodeURIComponent(this.username);
+	query += this.delimiterQuery;
 
-	sendRequest(undefined, query);
+	this.sendRequest(this.loginUserRequest, query);
 };
 
-var retrieveMessages = function() {
+Chat.prototype.registerUser = function() {
 	var query = '';
-	query += actionQuery + 'retrieve';
-	query += messageLogQuery;
-	query += delimiterQuery;
+	query += this.actionQuery + 'register';
+	query += this.usersLogQuery;
+	query += this.usernameQuery + encodeURIComponent(this.username);
+	query += this.passwordQuery + encodeURIComponent(this.password);
+	query += this.delimiterQuery;
 
-	sendRequest(getMessagesRequest, query);
+	this.sendRequest(undefined, query);
 };
 
-var fetchNewMessages = function() {
+Chat.prototype.retrieveMessages = function() {
 	var query = '';
-	query += actionQuery + 'fetch';
-	query += messageLogQuery;
-	query += lengthQuery + encodeURIComponent(messagesLength);
-	query += delimiterQuery;
+	query += this.actionQuery + 'retrieve';
+	query += this.messageLogQuery;
+	query += this.delimiterQuery;
 
-	sendRequest(getMessagesRequest, query);
+	this.sendRequest(this.getMessagesRequest, query);
 };
 
-var sendMessage = function() {
-	var message = messageField.value;
-
+Chat.prototype.fetchNewMessages = function() {
 	var query = '';
-	query += actionQuery + 'send';
-	query += messageLogQuery;
-	query += usernameQuery + encodeURIComponent(username);
-	query += messageQuery + encodeURIComponent(message);
-	query += delimiterQuery;
+	query += this.actionQuery + 'fetch';
+	query += this.messageLogQuery;
+	query += this.lengthQuery + encodeURIComponent(this.messagesLength);
+	query += this.delimiterQuery;
 
-	messageField.value = '';
-	changeButtonState();
-
-	sendRequest(sendMessageRequest, query);
+	this.sendRequest(this.getMessagesRequest, query);
 };
 
-var loginUserRequest = function() {
-	if (isRequestResponseReady()) {
-		if (request.responseText != '') {
-			password = prompt('Username found.\n\nEnter your password:');
-			if (password == request.responseText) {
-				successfulLogin = true;
+Chat.prototype.sendMessage = function() {
+	var message = this.messageField.value;
+
+	var query = '';
+	query += this.actionQuery + 'send';
+	query += this.messageLogQuery;
+	query += this.usernameQuery + encodeURIComponent(this.username);
+	query += this.messageQuery + encodeURIComponent(this.message);
+	query += this.delimiterQuery;
+
+	this.messageField.value = '';
+	this.changeButtonState();
+
+	this.sendRequest(this.sendMessageRequest, query);
+};
+
+Chat.prototype.loginUserRequest = function() {
+	if (this.isRequestResponseReady()) {
+		if (this.request.responseText != '') {
+			this.password = prompt('Username found.\n\nEnter your password:');
+			if (this.password == this.request.responseText) {
 				alert('Welcome back.');
 			} else {
 				alert('Wrong password.');
 			}
 		} else {
-			password = prompt('Username not found. Creating new account.\n\nEnter your password:');
-			registerUser();
+			this.password = prompt('Username not found. Creating new account.\n\nEnter your password:');
+			this.registerUser();
 			alert('Enjoy.');
 		}
 	}
 };
 
-var getMessagesRequest = function() {
-	if (isRequestResponseReady()) {
-		var messages = JSON.parse(request.responseText);
-		messagesLength += messages.length;
+Chat.prototype.getMessagesRequest = function() {
+	if (this.isRequestResponseReady()) {
+		var messages = JSON.parse(this.request.responseText);
+		this.messagesLength += messages.length;
 		for (var i in messages) {
-			messageWindow.value += messages[i] + DELIMITER;
+			this.messageWindow.value += messages[i] + this.delimiter;
 		}
 	}
 };
 
-var sendMessageRequest = function() {
-	if (isRequestResponseReady()) {
-		fetchNewMessages();
+Chat.prototype.sendMessageRequest = function() {
+	if (this.isRequestResponseReady()) {
+		this.fetchNewMessages();
 	}
 };
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', function() {
+	chat = new Chat();
+
+	chat.username = prompt('Enter your username:');
+	// chat.loginUser();
+	chat.messagesLength = 0;
+	chat.retrieveMessages();
+	setInterval('chat.fetchNewMessages()', chat.fetchIntervalMs);
+});
