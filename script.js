@@ -1,6 +1,21 @@
 var Chat = function() {
 	this.request = this.setRequest();
+	this.setAttributesAndEventListeners();
+	this.setLogsAndQueries();
+	this.setConstants();
 
+	this.messagesLength = 0;
+};
+
+Chat.prototype.setRequest = function() {
+	if (window.XMLHttpRequest) {
+		return new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+		return new ActiveXObject('Microsoft.XMLHTTP');
+	}
+};
+
+Chat.prototype.setAttributesAndEventListeners = function() {
 	this.messageWindow = document.getElementById('message-window');
 	this.messageField = document.getElementById('message-field');
 	this.button = document.getElementById('send-message-button');
@@ -11,7 +26,9 @@ var Chat = function() {
 	this.messageField.addEventListener('keyup', this.changeButtonState.bind(this));
 	this.messageField.addEventListener('keyup', this.checkIfSendMessage.bind(this));
 	this.button.addEventListener('click', this.sendMessage.bind(this));
+};
 
+Chat.prototype.setLogsAndQueries = function() {
 	this.serverScript = 'script.php';
 	this.usersLog = 'users_log.txt';
 	this.messageLog = 'message_log.txt';
@@ -25,21 +42,13 @@ var Chat = function() {
 	this.passwordQuery = '&password=';
 	this.lengthQuery = '&length=';
 	this.messageQuery = '&message=';
+};
 
+Chat.prototype.setConstants = function() {
 	this.fetchIntervalMs = 1000;
 	this.enterKey = 13;
 	this.responseReady = 4;
 	this.ok = 200;
-
-	this.messagesLength = 0;
-};
-
-Chat.prototype.setRequest = function() {
-	if (window.XMLHttpRequest) {
-		return new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
-		return new ActiveXObject('Microsoft.XMLHTTP');
-	}
 };
 
 Chat.prototype.sendRequest = function(callback, query) {
