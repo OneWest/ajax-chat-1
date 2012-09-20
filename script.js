@@ -1,11 +1,5 @@
 var Chat = function() {
-	this.request = (function() {
-		if (window.XMLHttpRequest) {
-			return new XMLHttpRequest();
-		} else if (window.ActiveXObject) {
-			return new ActiveXObject('Microsoft.XMLHTTP');
-		}
-	})();
+	this.request = this.setRequest();
 
 	this.messageWindow = document.getElementById('message-window');
 	this.messageField = document.getElementById('message-field');
@@ -38,6 +32,14 @@ var Chat = function() {
 	this.ok = 200;
 
 	this.messagesLength = 0;
+};
+
+Chat.prototype.setRequest = function() {
+	if (window.XMLHttpRequest) {
+		return new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+		return new ActiveXObject('Microsoft.XMLHTTP');
+	}
 };
 
 Chat.prototype.sendRequest = function(callback, query) {
