@@ -24,9 +24,9 @@ var Chat = function() {
 	this.messageWindow.setAttribute('disabled', 'disabled');
 	this.button.setAttribute('disabled', 'disabled');
 
-	this.messageField.addEventListener('keyup', this.changeButtonState);
-	this.messageField.addEventListener('keyup', this.checkIfSendMessage);
-	this.button.addEventListener('click', this.sendMessage);
+	this.messageField.addEventListener('keyup', this.changeButtonState.bind(this));
+	this.messageField.addEventListener('keyup', this.checkIfSendMessage.bind(this));
+	this.button.addEventListener('click', this.sendMessage.bind(this));
 
 	this.usersLogQuery = '&users_log=' + encodeURIComponent(this.usersLog);
 	this.messageLogQuery = '&message_log=' + encodeURIComponent(this.messageLog);
@@ -39,8 +39,8 @@ var Chat = function() {
 };
 
 Chat.prototype.sendRequest = function(callback, query) {
-	if (callback != undefined) {
-		this.request.onreadystatechange = callback;
+	if (callback) {
+		this.request.onreadystatechange = callback.bind(this);
 	}
 	this.request.open('post', this.serverScript, true);
 	this.request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -83,7 +83,7 @@ Chat.prototype.registerUser = function() {
 	query += this.passwordQuery + encodeURIComponent(this.password);
 	query += this.delimiterQuery;
 
-	this.sendRequest(undefined, query);
+	this.sendRequest(null, query);
 };
 
 Chat.prototype.retrieveMessages = function() {
@@ -139,7 +139,7 @@ Chat.prototype.loginUserRequest = function() {
 };
 
 Chat.prototype.getMessagesRequest = function() {
-	if (this.isRequestResponseReady()) {
+	if (this.isRequestResponseReady() && this.request.responseText) {
 		var messages = JSON.parse(this.request.responseText);
 		this.messagesLength += messages.length;
 		for (var i in messages) {
