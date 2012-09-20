@@ -2,16 +2,21 @@
 
 class Chat {
 
-	function ensure_log_exists( $log_file ) {
-		if ( !file_exists( $log_file ) ) {
-			$log = fopen( $log_file, 'w' );
+	function __construct( $log, $delimiter ) {
+		$this->log = $log;
+		$this->delimiter = $delimiter;
+	}
+
+	function ensure_log_exists() {
+		if ( !file_exists( $this->log ) ) {
+			$log = fopen( $this->log, 'w' );
 			fclose( $log );
 		}
 	}
 
-	function login_user( $users_log, $username, $delimiter ) {
-		$this->ensure_log_exists( $users_log );
-		$users = explode( $delimiter, file_get_contents( $users_log ) );
+	function login_user( $username ) {
+		$this->ensure_log_exists();
+		$users = explode( $this->delimiter, file_get_contents( $this->log ) );
 		$empty_user_index = count( $users ) - 1;
 		unset( $users[$empty_user_index] );
 
@@ -23,16 +28,16 @@ class Chat {
 		}
 	}
 
-	function register_user( $users_log, $username, $password, $delimiter ) {
-		$this->ensure_log_exists( $users_log );
-		$log = fopen( $users_log, 'a' );
-		fwrite( $log, $username . $delimiter . $password . $delimiter );
+	function register_user( $username, $password ) {
+		$this->ensure_log_exists();
+		$log = fopen( $this->log, 'a' );
+		fwrite( $log, $username . $this->delimiter . $password . $this->delimiter );
 		fclose( $log );
 	}
 
-	function retrieve_messages( $message_log, $delimiter ) {
-		$this->ensure_log_exists( $message_log );
-		$messages = explode( $delimiter, file_get_contents( $message_log ) );
+	function retrieve_messages() {
+		$this->ensure_log_exists();
+		$messages = explode( $this->delimiter, file_get_contents( $this->log ) );
 		$empty_message_index = count( $messages ) - 1;
 		unset( $messages[$empty_message_index] );
 
@@ -41,9 +46,9 @@ class Chat {
 		}
 	}
 
-	function fetch_messages( $message_log, $length, $delimiter ) {
-		$this->ensure_log_exists( $message_log );
-		$log_messages = explode( $delimiter, file_get_contents( $message_log ) );
+	function fetch_messages( $length ) {
+		$this->ensure_log_exists();
+		$log_messages = explode( $this->delimiter, file_get_contents( $this->log ) );
 		$log_length = count( $log_messages ) - 1;
 
 		$new_messages = array();
@@ -56,32 +61,32 @@ class Chat {
 		}
 	}
 
-	function send_message( $message_log, $username, $message, $delimiter ) {
-		$this->ensure_log_exists( $message_log );
-		$log = fopen( $message_log, 'a' );
-		fwrite( $log, '[' . $username . '] ' . $message . $delimiter );
+	function send_message( $username, $message ) {
+		$this->ensure_log_exists();
+		$log = fopen( $this->log, 'a' );
+		fwrite( $log, '[' . $username . '] ' . $message . $this->delimiter );
 		fclose( $log );
 	}
 
 }
 
-$chat = new Chat();
+$chat = new Chat( isset( $_POST['users_log'] ) ? $_POST['users_log'] : $_POST['message_log'], $_POST['delimiter'] );
 
 switch ( $_POST['action'] ) {
 	case 'login':
-		$chat->login_user( $_POST['users_log'], $_POST['username'], $_POST['delimiter'] );
+		$chat->login_user( $_POST['username'] );
 		break;
 	case 'register':
-		$chat->register_user( $_POST['users_log'], $_POST['username'], $_POST['password'], $_POST['delimiter'] );
+		$chat->register_user( $_POST['username'], $_POST['password'] );
 		break;
 	case 'retrieve':
-		$chat->retrieve_messages( $_POST['message_log'], $_POST['delimiter'] );
+		$chat->retrieve_messages();
 		break;
 	case 'fetch':
-		$chat->fetch_messages( $_POST['message_log'], intval( $_POST['length'] ), $_POST['delimiter'] );
+		$chat->fetch_messages( intval( $_POST['length'] ) );
 		break;
 	case 'send':
-		$chat->send_message( $_POST['message_log'], $_POST['username'], $_POST['message'], $_POST['delimiter'] );
+		$chat->send_message( $_POST['username'], $_POST['message'] );
 		break;
 }
 
