@@ -112,7 +112,7 @@ Chat.prototype.sendMessage = function() {
 	query += this.actionQuery + 'send';
 	query += this.messageLogQuery;
 	query += this.usernameQuery + encodeURIComponent(this.username);
-	query += this.messageQuery + encodeURIComponent(this.message);
+	query += this.messageQuery + encodeURIComponent(message);
 	query += this.delimiterQuery;
 
 	this.messageField.value = '';
