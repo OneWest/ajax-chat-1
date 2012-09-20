@@ -14,27 +14,6 @@ class Chat {
 		}
 	}
 
-	function login_user( $username ) {
-		$this->ensure_log_exists();
-		$users = explode( $this->delimiter, file_get_contents( $this->log ) );
-		$empty_user_index = count( $users ) - 1;
-		unset( $users[$empty_user_index] );
-
-		if ( in_array( $username, $users ) && array_search( $username, $users ) % 2 == 0 ) {
-			$user_password_index = array_search( $username, $users ) + 1;
-			echo $users[$user_password_index];
-		} else {
-			echo '';
-		}
-	}
-
-	function register_user( $username, $password ) {
-		$this->ensure_log_exists();
-		$log = fopen( $this->log, 'a' );
-		fwrite( $log, $username . $this->delimiter . $password . $this->delimiter );
-		fclose( $log );
-	}
-
 	function retrieve_messages() {
 		$this->ensure_log_exists();
 		$messages = explode( $this->delimiter, file_get_contents( $this->log ) );
@@ -70,15 +49,9 @@ class Chat {
 
 }
 
-$chat = new Chat( isset( $_POST['users_log'] ) ? $_POST['users_log'] : $_POST['message_log'], $_POST['delimiter'] );
+$chat = new Chat( $_POST['message_log'], $_POST['delimiter'] );
 
 switch ( $_POST['action'] ) {
-	case 'login':
-		$chat->login_user( $_POST['username'] );
-		break;
-	case 'register':
-		$chat->register_user( $_POST['username'], $_POST['password'] );
-		break;
 	case 'retrieve':
 		$chat->retrieve_messages();
 		break;

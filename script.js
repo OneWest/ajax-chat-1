@@ -30,16 +30,13 @@ Chat.prototype.setAttributesAndEventListeners = function() {
 
 Chat.prototype.setLogsAndQueries = function() {
 	this.serverScript = 'script.php';
-	this.usersLog = 'users_log.txt';
 	this.messageLog = 'message_log.txt';
 	this.delimiter = '\n';
 
-	this.usersLogQuery = '&users_log=' + encodeURIComponent(this.usersLog);
 	this.messageLogQuery = '&message_log=' + encodeURIComponent(this.messageLog);
 	this.delimiterQuery = '&delimiter=' + encodeURIComponent(this.delimiter);
 	this.actionQuery = 'action=';
 	this.usernameQuery = '&username=';
-	this.passwordQuery = '&password=';
 	this.lengthQuery = '&length=';
 	this.messageQuery = '&message=';
 };
@@ -78,27 +75,6 @@ Chat.prototype.checkIfSendMessage = function(event) {
 	}
 };
 
-Chat.prototype.loginUser = function() {
-	var query = '';
-	query += this.actionQuery + 'login';
-	query += this.usersLogQuery;
-	query += this.usernameQuery + encodeURIComponent(this.username);
-	query += this.delimiterQuery;
-
-	this.sendRequest(this.loginUserRequest, query);
-};
-
-Chat.prototype.registerUser = function() {
-	var query = '';
-	query += this.actionQuery + 'register';
-	query += this.usersLogQuery;
-	query += this.usernameQuery + encodeURIComponent(this.username);
-	query += this.passwordQuery + encodeURIComponent(this.password);
-	query += this.delimiterQuery;
-
-	this.sendRequest(null, query);
-};
-
 Chat.prototype.retrieveMessages = function() {
 	var query = '';
 	query += this.actionQuery + 'retrieve';
@@ -134,23 +110,6 @@ Chat.prototype.sendMessage = function() {
 	this.sendRequest(this.sendMessageRequest, query);
 };
 
-Chat.prototype.loginUserRequest = function() {
-	if (this.isRequestResponseReady()) {
-		if (this.request.responseText) {
-			this.password = prompt('Username found.\n\nEnter your password:');
-			if (this.password == this.request.responseText) {
-				alert('Welcome back.');
-			} else {
-				alert('Wrong password.');
-			}
-		} else {
-			this.password = prompt('Username not found. Creating new account.\n\nEnter your password:');
-			this.registerUser();
-			alert('Enjoy.');
-		}
-	}
-};
-
 Chat.prototype.getMessagesRequest = function() {
 	if (this.isRequestResponseReady() && this.request.responseText) {
 		var messages = JSON.parse(this.request.responseText);
@@ -169,9 +128,7 @@ Chat.prototype.sendMessageRequest = function() {
 
 document.addEventListener('DOMContentLoaded', function() {
 	chat = new Chat();
-
 	chat.username = prompt('Enter your username:');
-	// chat.loginUser();
 	chat.retrieveMessages();
 	setInterval('chat.fetchNewMessages()', chat.fetchIntervalMs);
 });
