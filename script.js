@@ -123,7 +123,7 @@ Chat.prototype.sendMessage = function() {
 
 Chat.prototype.loginUserRequest = function() {
 	if (this.isRequestResponseReady()) {
-		if (this.request.responseText != '') {
+		if (this.request.responseText) {
 			this.password = prompt('Username found.\n\nEnter your password:');
 			if (this.password == this.request.responseText) {
 				alert('Welcome back.');
