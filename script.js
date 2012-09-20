@@ -1,14 +1,4 @@
 var Chat = function() {
-	this.serverScript = 'script.php';
-	this.usersLog = 'users_log.txt';
-	this.messageLog = 'message_log.txt';
-	this.delimiter = '\n';
-
-	this.fetchIntervalMs = 1000;
-	this.enterKey = 13;
-	this.responseReady = 4;
-	this.ok = 200;
-
 	this.request = (function() {
 		if (window.XMLHttpRequest) {
 			return new XMLHttpRequest();
@@ -28,6 +18,11 @@ var Chat = function() {
 	this.messageField.addEventListener('keyup', this.checkIfSendMessage.bind(this));
 	this.button.addEventListener('click', this.sendMessage.bind(this));
 
+	this.serverScript = 'script.php';
+	this.usersLog = 'users_log.txt';
+	this.messageLog = 'message_log.txt';
+	this.delimiter = '\n';
+
 	this.usersLogQuery = '&users_log=' + encodeURIComponent(this.usersLog);
 	this.messageLogQuery = '&message_log=' + encodeURIComponent(this.messageLog);
 	this.delimiterQuery = '&delimiter=' + encodeURIComponent(this.delimiter);
@@ -36,6 +31,11 @@ var Chat = function() {
 	this.passwordQuery = '&password=';
 	this.lengthQuery = '&length=';
 	this.messageQuery = '&message=';
+
+	this.fetchIntervalMs = 1000;
+	this.enterKey = 13;
+	this.responseReady = 4;
+	this.ok = 200;
 };
 
 Chat.prototype.sendRequest = function(callback, query) {
