@@ -36,6 +36,8 @@ var Chat = function() {
 	this.enterKey = 13;
 	this.responseReady = 4;
 	this.ok = 200;
+
+	this.messagesLength = 0;
 };
 
 Chat.prototype.sendRequest = function(callback, query) {
@@ -159,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	chat.username = prompt('Enter your username:');
 	// chat.loginUser();
-	chat.messagesLength = 0;
 	chat.retrieveMessages();
 	setInterval('chat.fetchNewMessages()', chat.fetchIntervalMs);
 });
